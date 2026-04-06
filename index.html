@@ -687,6 +687,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
     </div></div>
     <div><div class="s-sec-title">🗺️ マップ一覧</div>
     <div class="s-card"><div id="s-maps"></div><button class="s-btn" onclick="addNewMap()">+ 新しいマップを作成</button></div></div>
+    <div><div class="s-sec-title">🗑️ データのリセット</div>
+    <div class="s-card warn-card">
+      <div class="warn-row" style="align-items:flex-start"><span class="warn-icon">⚠️</span><div>
+        <b>このアプリのデータのみ削除します</b>
+        <div style="font-size:12px;color:#b8b8d0;margin-top:4px;line-height:1.7">メモ・マップ・フォルダ・設定をすべて初期状態に戻します。<br>ブラウザの他のサイトやデータには一切影響しません。<br>リセット前にエクスポートを行うことを強く推奨します。</div>
+      </div></div>
+      <button class="s-btn danger" onclick="openResetConfirm()" style="margin-top:4px">🗑️ アプリデータをリセット…</button>
+    </div></div>
     <div><div class="s-sec-title">ℹ️ アプリ情報</div>
     <div class="s-card">
       <div class="info-row"><span class="info-lbl">アプリ名</span><span>ThinkNote</span></div>
@@ -898,6 +906,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
   <span>ホーム画面にインストールできます</span>
   <button onclick="installApp()">インストール</button>
   <button id="ib-close" onclick="document.getElementById('install-banner').remove()">✕</button>
+</div>
+
+<!-- RESET CONFIRM MODAL -->
+<div id="reset-bg" class="mbg hidden" onclick="if(event.target===this)closeResetConfirm()">
+  <div class="mbox" style="max-width:380px">
+    <h3 style="color:var(--red)">🗑️ アプリデータのリセット</h3>
+    <div style="font-size:13px;color:var(--tx2);line-height:1.8;background:var(--redb);border:1px solid var(--redbr);border-radius:var(--r);padding:12px">
+      <b style="color:var(--tx)">以下のデータがすべて削除されます：</b>
+      <ul style="padding-left:16px;margin-top:6px;display:flex;flex-direction:column;gap:4px">
+        <li>すべてのメモとフォルダ</li>
+        <li>すべてのマップとノード</li>
+        <li>タグ・設定・外観設定</li>
+      </ul>
+    </div>
+    <div style="font-size:12px;color:var(--tx3);line-height:1.7;padding:6px 2px">
+      ブラウザの他のサイトやデータには一切影響しません。<br>
+      リセット前にバックアップのエクスポートを推奨します。
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="mb primary" onclick="doResetWithExport()" style="background:linear-gradient(135deg,#3a6fd0,#5a8ff0)">⬇️ JSONをエクスポートしてからリセット</button>
+      <button class="mb" onclick="doResetWithoutExport()" style="color:var(--red);border-color:var(--redbr)">🗑️ エクスポートせずにリセット</button>
+      <button class="mb" onclick="closeResetConfirm()">キャンセル</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -3940,6 +3972,44 @@ function closeIO(){document.getElementById('io-bg').classList.add('hidden')}
 function ioSt(msg){const el=document.getElementById('io-st');el.textContent=msg;el.classList.add('show')}
 function dlFile(name,content,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},100)}
 function exportJSON(){dlFile(`thinknote_${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({version:5,exported:new Date().toISOString(),memos,maps,folders,mapFolders,pinnedTags},null,2),'application/json');ioSt(`✓ JSONをダウンロードしました（メモ${memos.length}件、マップ${maps.length}件）`)}
+
+// =====================
+// RESET
+// =====================
+function openResetConfirm(){document.getElementById('reset-bg').classList.remove('hidden')}
+function closeResetConfirm(){document.getElementById('reset-bg').classList.add('hidden')}
+function _execReset(){
+  // このアプリのキーのみ削除（他サイトのlocalStorageは一切触れない）
+  Object.values(KS).forEach(k=>localStorage.removeItem(k));
+  localStorage.removeItem('tn8_map_sidebar_collapsed');
+  localStorage.removeItem('tn8_tabOrder');
+  localStorage.removeItem('tn8_noticed');
+  // メモリ上のデータをリセット
+  memos=[];folders=[];pinnedTags=[];maps=[];mapFolders=[];
+  mapSettings={bgPreset:'default',customBg:'',customGrid:'dot',customGridColor:'',defaultEdgeColor:'#6e85f0'};
+  currentId=null;activeFolder=ALL_F.id;activeMapId=null;activeMapFolderId='__all__';
+  selNodes.clear();linkFrom=null;
+  undoStack=[];undoPtr=-1;
+  closeResetConfirm();
+  ensureMap();
+  save();
+  renderAll();
+  renderMapTabs();
+  renderMapFolders();
+  if(canvas&&ctx)drawMap();
+  switchTab('memo');
+}
+function doResetWithExport(){
+  // エクスポート後にリセット実行
+  dlFile(`thinknote_backup_${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({version:5,exported:new Date().toISOString(),memos,maps,folders,mapFolders,pinnedTags},null,2),'application/json');
+  // ダウンロード開始直後に少し待ってからリセット（ブラウザのDL処理余裕）
+  setTimeout(()=>{
+    if(confirm('JSONのダウンロードを開始しました。\nこのままリセットを実行しますか？'))_execReset();
+  },400);
+}
+function doResetWithoutExport(){
+  if(confirm(`本当にリセットしますか？\nメモ${memos.length}件・マップ${maps.length}件がすべて削除されます。\nこの操作は元に戻せません。`))_execReset();
+}
 function exportMD(){
   const date=new Date().toISOString().slice(0,10);const lines=[`# ThinkNote — ${date}`,``,`メモ数: ${memos.length}件`,``];
   const g=new Map();memos.forEach(m=>{const f=m.folderId?(folders.find(x=>x.id===m.folderId)||{name:'未分類',icon:'📂'}):({name:'未分類',icon:'📂'});const k=f.icon+' '+f.name;if(!g.has(k))g.set(k,[]);g.get(k).push(m)});
