@@ -72,7 +72,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
    3-PANE LAYOUT (PC)
    ===================== */
 /* フォルダサイドバー */
-#left-sidebar{width:220px;border-right:1px solid var(--bd);background:#0e1220;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .2s}
+#left-sidebar{width:220px;border-right:1px solid var(--bd);background:#0e1220;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .22s cubic-bezier(.4,0,.2,1)}
+#left-sidebar.collapsed{width:0;border-right:none}
+/* 折りたたみトグルボタン（サイドバー左端に固定） */
+#sidebar-toggle{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:20;width:18px;height:52px;background:#0e1220;border:1px solid var(--bd);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--tx3);transition:background .15s,color .15s,left .22s cubic-bezier(.4,0,.2,1);user-select:none}
+#sidebar-toggle:hover{background:var(--bg3);color:var(--tx)}
+#sidebar-toggle .st-arrow{transition:transform .22s cubic-bezier(.4,0,.2,1);display:inline-block;line-height:1}
+#left-sidebar.collapsed+#sidebar-toggle-anchor #sidebar-toggle,
+.sidebar-toggle-wrap{position:relative;flex-shrink:0}
+/* サイドバートグルの位置調整用ラッパー */
+#sidebar-toggle-wrap{position:relative;width:0;flex-shrink:0;overflow:visible}
+#sidebar-toggle-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:20;width:18px;height:52px;background:#0e1220;border:1px solid var(--bd);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:background .15s,color .15s;user-select:none;font-size:11px}
+#sidebar-toggle-btn:hover{background:var(--bg3);color:var(--acd)}
+#sidebar-toggle-btn .st-icon{transition:transform .22s cubic-bezier(.4,0,.2,1);display:inline-block}
 /* メモカードリスト（中央ペイン） */
 #memo-list-pane{width:300px;border-right:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
 #mlp-header{padding:10px 12px 8px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#0e1220}
@@ -269,7 +281,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
 
 /* MAP */
 #map-panel{flex:1;display:flex;overflow:hidden}
-#map-left{width:168px;border-right:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+#map-left{width:168px;border-right:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .22s cubic-bezier(.4,0,.2,1)}
+#map-left.collapsed{width:0;border-right:none}
+/* マップサイドバートグルボタン */
+#map-sidebar-toggle-wrap{position:relative;width:0;flex-shrink:0;overflow:visible}
+#map-sidebar-toggle-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:20;width:18px;height:52px;background:var(--bg2);border:1px solid var(--bd);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:background .15s,color .15s;user-select:none;font-size:11px}
+#map-sidebar-toggle-btn:hover{background:var(--bg4);color:var(--acd)}
+#map-sidebar-toggle-btn .mst-icon{transition:transform .22s cubic-bezier(.4,0,.2,1);display:inline-block}
 #map-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 /* map tabs */
 #map-tabs-bar{display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--bd);flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -486,6 +504,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
     <button id="bulk-del-btn" style="display:none" onclick="deleteSelectedMemos()"></button>
     <button id="bulk-empty-btn" style="display:none" onclick="deleteEmptyMemos()"></button>
   </div>
+  <!-- サイドバー折りたたみボタン（サイドバーの右端に張り付く） -->
+  <div id="sidebar-toggle-wrap">
+    <button id="sidebar-toggle-btn" onclick="toggleSidebar()" title="フォルダパネルを折りたたむ">
+      <span class="st-icon">‹</span>
+    </button>
+  </div>
 
   <!-- ② 中央ペイン：メモカードリスト -->
   <div id="memo-list-pane">
@@ -574,6 +598,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
   <div id="map-left">
     <div class="lsb-hd"><span class="lsb-lbl">マップフォルダ</span><button class="lsb-add" onclick="openMFM()">+</button></div>
     <div class="folder-list map-folders" id="map-folder-list"></div>
+  </div>
+  <!-- マップサイドバー折りたたみボタン -->
+  <div id="map-sidebar-toggle-wrap">
+    <button id="map-sidebar-toggle-btn" onclick="toggleMapSidebar()" title="フォルダパネルを折りたたむ">
+      <span class="mst-icon">‹</span>
+    </button>
   </div>
   <div id="map-main">
     <div id="map-tabs-bar"><button id="map-tab-add" onclick="addNewMap()">+</button></div>
@@ -1377,8 +1407,85 @@ document.addEventListener('mousedown',(e)=>{
 });
 
 // =====================
-// toggleMemoSelMode（中央ペイン対応版）
+// サイドバー折りたたみ
 // =====================
+let _sidebarCollapsed=false;
+function toggleSidebar(){
+  _sidebarCollapsed=!_sidebarCollapsed;
+  const sb=document.getElementById('left-sidebar');
+  const btn=document.getElementById('sidebar-toggle-btn');
+  const icon=btn?.querySelector('.st-icon');
+  if(_sidebarCollapsed){
+    sb.classList.add('collapsed');
+    if(icon)icon.style.transform='rotate(180deg)';
+    btn.title='フォルダパネルを開く';
+  }else{
+    sb.classList.remove('collapsed');
+    if(icon)icon.style.transform='rotate(0deg)';
+    btn.title='フォルダパネルを折りたたむ';
+  }
+  try{localStorage.setItem('tn8_sidebar_collapsed',_sidebarCollapsed?'1':'0');}catch{}
+}
+// 起動時に前回の状態を復元
+(function initSidebar(){
+  try{if(localStorage.getItem('tn8_sidebar_collapsed')==='1'){
+    _sidebarCollapsed=true;
+    const sb=document.getElementById('left-sidebar');
+    if(sb)sb.classList.add('collapsed');
+    const btn=document.getElementById('sidebar-toggle-btn');
+    const icon=btn?.querySelector('.st-icon');
+    if(icon)icon.style.transform='rotate(180deg)';
+  }}catch{}
+})();
+
+// =====================
+// マップサイドバー折りたたみ
+// =====================
+let _mapSidebarCollapsed=false;
+function toggleMapSidebar(){
+  _mapSidebarCollapsed=!_mapSidebarCollapsed;
+  const sb=document.getElementById('map-left');
+  const btn=document.getElementById('map-sidebar-toggle-btn');
+  const icon=btn?.querySelector('.mst-icon');
+  if(_mapSidebarCollapsed){
+    sb.classList.add('collapsed');
+    if(icon)icon.style.transform='rotate(180deg)';
+    btn.title='フォルダパネルを開く';
+  }else{
+    sb.classList.remove('collapsed');
+    if(icon)icon.style.transform='rotate(0deg)';
+    btn.title='フォルダパネルを折りたたむ';
+  }
+  // トランジション中（220ms）もキャンバスを連続リサイズして描画を維持する
+  const DURATION=230;
+  const start=performance.now();
+  let rafId;
+  function rafResize(now){
+    if(canvas&&ctx){
+      const r=canvas.parentElement.getBoundingClientRect();
+      if(r.width>0&&r.height>0){
+        canvas.width=r.width*dpr;canvas.height=r.height*dpr;
+        canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';
+        ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+        drawMap();
+      }
+    }
+    if(now-start<DURATION){rafId=requestAnimationFrame(rafResize);}
+    else{if(typeof initCanvas==='function')initCanvas();drawMap();}
+  }
+  rafId=requestAnimationFrame(rafResize);
+  try{localStorage.setItem('tn8_map_sidebar_collapsed',_mapSidebarCollapsed?'1':'0');}catch{}
+}
+(function initMapSidebar(){
+  try{if(localStorage.getItem('tn8_map_sidebar_collapsed')==='1'){
+    _mapSidebarCollapsed=true;
+    const sb=document.getElementById('map-left');
+    if(sb)sb.classList.add('collapsed');
+    const btn=document.getElementById('map-sidebar-toggle-btn');
+    const icon=btn?.querySelector('.mst-icon');
+    if(icon)icon.style.transform='rotate(180deg)';
+  }}catch{}
+})();
 
 // ---- Tree render ----
 function renderTree(){
