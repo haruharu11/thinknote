@@ -46,27 +46,68 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
 ::-webkit-scrollbar-thumb:hover{background:var(--tx3)}
 
 /* TOP BAR */
-#topbar{display:flex;align-items:center;gap:10px;padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top));background:#13161f;border-bottom:1px solid #2a2d3e;flex-shrink:0}
-#logo{font-size:14px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;background:linear-gradient(135deg,#b8ccff 0%,#d8c8ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-#sw{flex:1;position:relative}
-#si{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--tx3);pointer-events:none}
-#search-input{width:100%;padding:6px 12px 6px 30px;border:1px solid var(--bd2);border-radius:8px;font-size:12px;background:var(--bg3);color:var(--tx);outline:none;font-family:inherit;transition:border-color .15s}
-#search-input:focus{border-color:var(--ac);background:var(--bg)}
-#io-btn{background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--r);padding:5px 10px;cursor:pointer;font-size:11px;color:var(--tx2);font-family:inherit;flex-shrink:0;transition:all .15s}
+#topbar{display:flex;align-items:center;gap:10px;padding:8px 16px;padding-top:max(8px,env(safe-area-inset-top));background:#0d1018;border-bottom:1px solid #1e2235;flex-shrink:0;height:48px}
+#logo{font-size:14px;font-weight:800;letter-spacing:-.4px;white-space:nowrap;background:linear-gradient(135deg,#b8ccff 0%,#d8c8ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0}
+#sw{flex:1;position:relative;max-width:480px}
+#si{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--tx3);pointer-events:none}
+#search-input{width:100%;padding:7px 14px 7px 34px;border:1px solid var(--bd2);border-radius:9px;font-size:13px;background:var(--bg3);color:var(--tx);outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s}
+#search-input:focus{border-color:var(--ac);background:var(--bg);box-shadow:0 0 0 3px rgba(110,133,240,.15)}
+#topbar-actions{display:flex;gap:6px;align-items:center;margin-left:auto}
+#new-memo-btn{background:linear-gradient(135deg,#4a5fd0,#6e85f0);border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;color:#fff;font-family:inherit;font-weight:600;transition:opacity .15s;white-space:nowrap;flex-shrink:0}
+#new-memo-btn:hover{opacity:.88}
+#io-btn{background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--r);padding:6px 11px;cursor:pointer;font-size:11px;color:var(--tx2);font-family:inherit;flex-shrink:0;transition:all .15s}
 #io-btn:hover{background:var(--bg4);border-color:var(--acbd);color:var(--acd)}
 
 /* MAIN TABS */
-#tabs{display:flex;background:#13161f;border-bottom:1px solid #2a2d3e;flex-shrink:0;gap:0;}
-.tab{flex:1;padding:11px 4px 10px;text-align:center;font-size:11.5px;cursor:pointer;color:#6070a0;border-bottom:2px solid transparent;font-weight:500;display:flex;align-items:center;justify-content:center;gap:4px;user-select:none;transition:color .15s,border-color .15s,background .15s}
-.tab:hover{color:#9090c0;background:rgba(255,255,255,.04)}
-.tab.active{color:#a0b8ff;border-bottom-color:#6e85f0;font-weight:700;background:rgba(110,133,240,.08)}
+#tabs{display:flex;background:#0d1018;border-bottom:1px solid #1e2235;flex-shrink:0;gap:0;padding:0 4px}
+.tab{padding:9px 14px 8px;text-align:center;font-size:12px;cursor:pointer;color:#5a6a90;border-bottom:2px solid transparent;font-weight:500;display:flex;align-items:center;justify-content:center;gap:5px;user-select:none;transition:color .15s,border-color .15s;white-space:nowrap}
+.tab:hover{color:#8898c8}
+.tab.active{color:#a0b8ff;border-bottom-color:#6e85f0;font-weight:700}
 
 #body{display:flex;flex:1;overflow:hidden}
 .panel{display:flex;flex:1;overflow:hidden}
 .hidden{display:none!important}
 
-/* SHARED LEFT SIDEBAR */
-#left-sidebar{width:188px;border-right:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+/* =====================
+   3-PANE LAYOUT (PC)
+   ===================== */
+/* フォルダサイドバー */
+#left-sidebar{width:220px;border-right:1px solid var(--bd);background:#0e1220;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .2s}
+/* メモカードリスト（中央ペイン） */
+#memo-list-pane{width:300px;border-right:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+#mlp-header{padding:10px 12px 8px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#0e1220}
+#mlp-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--tx3)}
+#mlp-actions{display:flex;gap:4px;align-items:center}
+#mlp-add{width:22px;height:22px;background:linear-gradient(135deg,#4a5fd0,#6e85f0);border:none;border-radius:6px;cursor:pointer;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;transition:opacity .15s}
+#mlp-add:hover{opacity:.82}
+#mlp-sort{font-size:10px;padding:2px 6px;border-radius:5px;border:1px solid var(--bd2);background:none;cursor:pointer;color:var(--tx3);font-family:inherit;transition:all .15s}
+#mlp-sort:hover{color:var(--tx);border-color:var(--bd2)}
+#mlp-sel-bar{padding:4px 8px;display:none;gap:4px;flex-wrap:wrap;border-bottom:0.5px solid var(--bd);align-items:center;flex-shrink:0}
+#mlp-sel-bar.visible{display:flex}
+#mlp-sel-count{font-size:10px;color:var(--acd);font-weight:500}
+#mlp-sel-del{font-size:10px;padding:2px 7px;border-radius:var(--r);border:0.5px solid var(--redbr);background:none;cursor:pointer;color:var(--red);font-family:inherit}
+#mlp-sel-empty{font-size:10px;padding:2px 7px;border-radius:var(--r);border:0.5px solid var(--redbr);background:none;cursor:pointer;color:var(--red);font-family:inherit}
+#memo-card-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 0}
+/* メモカード */
+.mc{padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:8px;align-items:flex-start;transition:background .12s,transform .12s;position:relative}
+.mc:hover{background:var(--bg3)}
+.mc.active{background:linear-gradient(90deg,rgba(110,133,240,.12),rgba(110,133,240,.04));border-left:3px solid var(--ac);padding-left:11px}
+.mc-check{width:14px;height:14px;flex-shrink:0;margin-top:2px;accent-color:var(--ac);cursor:pointer;display:none}
+.mc.check-mode .mc-check{display:block}
+.mc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;opacity:.9;flex-shrink:0}
+.mc-body{flex:1;min-width:0}
+.mc-title{font-size:12.5px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}
+.mc.active .mc-title{color:var(--acd)}
+.mc-preview{font-size:11px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;line-height:1.4}
+.mc-meta{display:flex;align-items:center;gap:5px;margin-top:4px;flex-wrap:wrap}
+.mc-tag{font-size:9px;padding:1px 6px;border-radius:20px;font-weight:600;white-space:nowrap}
+.mc-date{font-size:9px;color:var(--tx3);margin-left:auto;white-space:nowrap}
+.mc-folder{font-size:9px;color:var(--tx3)}
+.mc-empty{padding:32px 16px;text-align:center;font-size:12px;color:var(--tx3)}
+
+/* フォルダツリー専用調整 */
+#left-sidebar{width:220px}
+#folder-only-tree{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 0}
 .lsb-section{flex-shrink:0}
 .lsb-hd{padding:9px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd)}
 .lsb-lbl{font-size:10px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
@@ -111,8 +152,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
 .mid{font-size:9px;color:var(--tx3);margin-top:2px}
 
 /* EDITOR */
-#memo-editor{flex:1;display:flex;flex-direction:column;background:var(--bg);min-width:0}
-#memo-rich{flex:1;overflow-y:auto;padding:16px 20px;font-size:14px;line-height:1.95;color:var(--tx);outline:none;word-break:break-word;-webkit-overflow-scrolling:touch;cursor:text}
+#memo-editor{flex:1;display:flex;flex-direction:column;background:var(--bg);min-width:0;overflow:hidden}
+#memo-editor-inner{flex:1;display:flex;flex-direction:column;max-width:860px;width:100%;margin:0 auto;min-width:0;overflow:hidden}
+#memo-rich{flex:1;overflow-y:auto;padding:20px 28px 40px;font-size:15px;line-height:2.0;letter-spacing:.02em;color:var(--tx);outline:none;word-break:break-word;-webkit-overflow-scrolling:touch;cursor:text}
 #memo-rich:empty:before{content:attr(placeholder);color:var(--tx3);pointer-events:none;display:block}
 #memo-rich img{max-width:100%;border-radius:8px;display:block;margin:8px 0;cursor:default;user-select:none}
 #memo-rich img.selected{outline:2px solid var(--ac);outline-offset:2px}
@@ -121,6 +163,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
 #memo-rich p{margin:0;min-height:1.5em}
 #memo-rich ul,#memo-rich ol{padding-left:1.5em;margin:4px 0}
 #memo-rich li{margin:2px 0}
+/* フローティングツールバー（Notion型：選択時のみ） */
+#float-toolbar{position:fixed;z-index:200;background:#1a1f2e;border:1px solid var(--bd2);border-radius:9px;padding:3px 4px;display:none;gap:2px;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,.6);pointer-events:auto}
+#float-toolbar.show{display:flex}
+#float-toolbar button{background:none;border:none;cursor:pointer;font-size:12px;color:var(--tx2);padding:5px 8px;border-radius:6px;font-family:inherit;transition:background .1s,color .1s;line-height:1;white-space:nowrap}
+#float-toolbar button:hover{background:var(--bg4);color:var(--tx)}
+#float-toolbar .ft-sep{width:1px;height:16px;background:var(--bd2);margin:0 2px;flex-shrink:0}
+/* 固定ツールバー（画像追加などはここ） */
 #memo-rich-toolbar{display:flex;gap:4px;padding:5px 14px;border-top:1px solid var(--bd);flex-shrink:0;flex-wrap:wrap;background:var(--bg2)}
 #memo-rich-toolbar .mb{padding:4px 10px;font-size:12px}
 .memo-img-wrap{position:relative;display:inline-block;margin:4px 0}
@@ -403,78 +452,106 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
 <div id="app">
 <div id="topbar">
   <span id="logo">📝 ThinkNote</span>
-  <div id="sw"><span id="si">🔍</span><input id="search-input" placeholder="メモを検索..." oninput="onSearch(this.value)"></div>
-  <button id="io-btn" onclick="openIO()" title="エクスポート/インポート">⬆︎⬇︎</button>
+  <div id="sw"><span id="si">🔍</span><input id="search-input" placeholder="メモを検索..." oninput="onSearch(this.value)" onkeydown="if(event.key==='Escape'){this.value='';onSearch('')}"></div>
+  <div id="topbar-actions">
+    <button id="new-memo-btn" onclick="addMemo()" title="新しいメモ (Ctrl+N)">＋ 新しいメモ</button>
+    <button id="io-btn" onclick="openIO()" title="エクスポート/インポート">⬆︎⬇︎</button>
+  </div>
 </div>
 <div id="tabs"></div>
 <div id="body">
 
 <!-- MEMO TAB -->
 <div class="panel" id="memo-panel">
+
+  <!-- ① 左ペイン：フォルダ専用サイドバー -->
   <div id="left-sidebar">
-    <div style="padding:10px 12px 8px;border-bottom:1px solid var(--bd);background:linear-gradient(135deg,#151828 0%,#1a1f30 100%)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1px">
-        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;background:linear-gradient(135deg,#9db0ff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Notes</span>
-        <div style="display:flex;gap:3px;align-items:center">
-          <button id="bulk-btn" style="font-size:10px;padding:2px 7px;border-radius:6px;border:1px solid var(--bd2);background:var(--bg3);cursor:pointer;color:var(--tx3);font-family:inherit;transition:all .15s" onclick="toggleMemoSelMode()">選択</button>
-          <button onclick="addMemo()" title="新しいメモ" style="width:22px;height:22px;background:linear-gradient(135deg,#4a5fd0,#6e85f0);border:none;border-radius:6px;cursor:pointer;color:#fff;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;transition:opacity .15s">+</button>
-          <button onclick="openFM()" title="フォルダ追加" style="width:22px;height:22px;background:var(--bg3);border:1px solid var(--bd2);border-radius:6px;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s">📁</button>
+    <div style="padding:10px 12px 8px;border-bottom:1px solid var(--bd);background:#0a0d18;flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;background:linear-gradient(135deg,#9db0ff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Folders</span>
+        <div style="display:flex;gap:4px">
+          <button onclick="openFM()" title="フォルダ追加" style="width:22px;height:22px;background:var(--bg3);border:1px solid var(--bd2);border-radius:6px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--tx3)" onmouseover="this.style.borderColor='var(--acbd)';this.style.color='var(--acd)'" onmouseout="this.style.borderColor='var(--bd2)';this.style.color='var(--tx3)'">📁</button>
         </div>
       </div>
     </div>
-    <div id="memo-list-hd-btns" style="display:none;padding:4px 8px;gap:4px;flex-wrap:wrap;border-bottom:0.5px solid var(--bd)">
-      <span id="sel-count" style="font-size:10px;color:var(--acd);font-weight:500"></span>
-      <button id="bulk-del-btn" style="font-size:10px;padding:2px 7px;border-radius:var(--r);border:0.5px solid var(--redbr);background:none;cursor:pointer;color:var(--red);font-family:inherit" onclick="deleteSelectedMemos()">選択削除</button>
-      <button id="bulk-empty-btn" style="font-size:10px;padding:2px 7px;border-radius:var(--r);border:0.5px solid var(--redbr);background:none;cursor:pointer;color:var(--red);font-family:inherit" onclick="deleteEmptyMemos()">空削除</button>
-    </div>
-    <div id="memo-tree" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative"></div>
-    <!-- hidden compat elements -->
+    <div id="folder-only-tree"></div>
+    <!-- 選択モード用 hidden compat -->
     <div id="folder-list" style="display:none"></div>
     <div id="memo-items" style="display:none"></div>
     <span id="memo-ll" style="display:none">メモ</span>
     <div id="memo-la" style="display:none"></div>
+    <div id="memo-list-hd-btns" style="display:none"></div>
+    <span id="sel-count" style="display:none"></span>
+    <button id="bulk-btn" style="display:none" onclick="toggleMemoSelMode()"></button>
+    <button id="bulk-del-btn" style="display:none" onclick="deleteSelectedMemos()"></button>
+    <button id="bulk-empty-btn" style="display:none" onclick="deleteEmptyMemos()"></button>
   </div>
-  <div id="memo-editor">
-    <div id="ed-top">
-      <input id="title-input" placeholder="タイトル" oninput="saveMemo()">
-      <div id="folder-row"><span class="rl">フォルダ</span><select id="folder-select" onchange="moveMF()"></select></div>
-      <div id="cat-row"><span class="rl">カテゴリ</span></div>
-      <div id="memo-dates" style="display:flex;gap:14px;align-items:center;margin-bottom:4px;flex-wrap:wrap"></div>
-      <div id="tag-sec">
-        <div id="tags-disp"></div>
-        <div id="tag-ir">
-          <input id="new-tag-input" placeholder="タグ追加..." autocomplete="off" oninput="onTI(this.value)" onkeydown="onTK(event)" onfocus="onTF()" onblur="onTB()">
-          <button id="tag-mgr-btn" onclick="openTagModal()">タグ管理</button>
-        </div>
-        <div id="pin-row"></div>
-        <div id="tag-sug" class="hidden"></div>
+
+  <!-- ② 中央ペイン：メモカードリスト -->
+  <div id="memo-list-pane">
+    <div id="mlp-header">
+      <span id="mlp-title">メモ</span>
+      <div id="mlp-actions">
+        <button id="mlp-sel-btn" style="font-size:10px;padding:2px 7px;border-radius:5px;border:1px solid var(--bd2);background:none;cursor:pointer;color:var(--tx3);font-family:inherit;transition:all .15s" onclick="toggleMemoSelMode()">選択</button>
+        <button id="mlp-add" onclick="addMemo()" title="新しいメモ">+</button>
       </div>
     </div>
-    <!-- rich text editor -->
-    <div id="memo-rich" contenteditable="true" spellcheck="false"
-         placeholder="思ったことを自由に書いてみよう..."
-         oninput="memoRichInput()"
-         onkeydown="memoRichKeydown(event)"
-         onclick="if(event.target!==event.currentTarget&&event.target.tagName!=='IMG'){document.querySelectorAll('#memo-rich img.selected').forEach(i=>i.classList.remove('selected'));document.querySelectorAll('.memo-img-resizer').forEach(r=>r.remove());}"
-         ondragover="event.preventDefault()"
-         ondrop="memoRichDrop(event)"
-         onpaste="memoRichPaste(event)"></div>
-    <input type="file" id="memo-img-file" accept="image/*" style="display:none" onchange="memoImgFileAdd(this)">
-    <div id="memo-rich-toolbar">
-      <button class="mb" onclick="document.getElementById('memo-img-file').click()">📎 画像</button>
-      <button class="mb" onclick="memoRichExecCmd('bold')"><b>B</b></button>
-      <button class="mb" onclick="memoRichExecCmd('italic')"><i>I</i></button>
-      <button class="mb" onclick="memoRichExecCmd('insertUnorderedList')">• リスト</button>
+    <div id="mlp-sel-bar">
+      <span id="mlp-sel-count"></span>
+      <button id="mlp-sel-del" onclick="deleteSelectedMemos()">選択削除</button>
+      <button id="mlp-sel-empty" onclick="deleteEmptyMemos()">空削除</button>
     </div>
-    <div id="ed-foot">
-      <button id="btn-to-map" class="ef-btn" onclick="addSingleToMap()">マップに追加</button>
-      <button class="ef-btn" onclick="currentId&&addChildMemo(currentId)" style="color:var(--acd)!important;border-color:var(--acbd)!important">子メモ追加</button>
-      <button id="btn-detach" class="ef-btn hidden" onclick="detachFromParent()" title="親子関係を解除してフォルダ直下へ移動">親から切り離す</button>
-      <button id="btn-del" class="ef-btn" onclick="deleteMemo()">削除</button>
-      <span id="char-count"></span>
-    </div>
+    <div id="memo-card-list"></div>
+    <!-- compat -->
+    <div id="memo-tree" style="display:none"></div>
   </div>
-  <div id="empty-ed" class="hidden"><p>メモを選択するか</p><button id="empty-add-btn" onclick="addMemo()">+ 新しいメモ</button></div>
+
+  <!-- ③ 右ペイン：エディタ -->
+  <div id="memo-editor">
+    <div id="memo-editor-inner">
+      <div id="ed-top">
+        <input id="title-input" placeholder="タイトル" oninput="saveMemo()">
+        <div id="folder-row"><span class="rl">フォルダ</span><select id="folder-select" onchange="moveMF()"></select></div>
+        <div id="cat-row"><span class="rl">カテゴリ</span></div>
+        <div id="memo-dates" style="display:flex;gap:14px;align-items:center;margin-bottom:4px;flex-wrap:wrap"></div>
+        <div id="tag-sec">
+          <div id="tags-disp"></div>
+          <div id="tag-ir">
+            <input id="new-tag-input" placeholder="タグ追加..." autocomplete="off" oninput="onTI(this.value)" onkeydown="onTK(event)" onfocus="onTF()" onblur="onTB()">
+            <button id="tag-mgr-btn" onclick="openTagModal()">タグ管理</button>
+          </div>
+          <div id="pin-row"></div>
+          <div id="tag-sug" class="hidden"></div>
+        </div>
+      </div>
+      <!-- rich text editor -->
+      <div id="memo-rich" contenteditable="true" spellcheck="false"
+           placeholder="思ったことを自由に書いてみよう..."
+           oninput="memoRichInput()"
+           onkeydown="memoRichKeydown(event)"
+           onclick="if(event.target!==event.currentTarget&&event.target.tagName!=='IMG'){document.querySelectorAll('#memo-rich img.selected').forEach(i=>i.classList.remove('selected'));document.querySelectorAll('.memo-img-resizer').forEach(r=>r.remove());}"
+           ondragover="event.preventDefault()"
+           ondrop="memoRichDrop(event)"
+           onpaste="memoRichPaste(event)"
+           onmouseup="showFloatToolbar()" onkeyup="showFloatToolbar()"></div>
+      <input type="file" id="memo-img-file" accept="image/*" style="display:none" onchange="memoImgFileAdd(this)">
+      <div id="memo-rich-toolbar">
+        <button class="mb" onclick="document.getElementById('memo-img-file').click()">📎 画像</button>
+        <button class="mb" onclick="memoRichExecCmd('bold')"><b>B</b></button>
+        <button class="mb" onclick="memoRichExecCmd('italic')"><i>I</i></button>
+        <button class="mb" onclick="memoRichExecCmd('insertUnorderedList')">• リスト</button>
+      </div>
+      <div id="ed-foot">
+        <button id="btn-to-map" class="ef-btn" onclick="addSingleToMap()">マップに追加</button>
+        <button class="ef-btn" onclick="currentId&&addChildMemo(currentId)" style="color:var(--acd)!important;border-color:var(--acbd)!important">子メモ追加</button>
+        <button id="btn-detach" class="ef-btn hidden" onclick="detachFromParent()" title="親子関係を解除してフォルダ直下へ移動">親から切り離す</button>
+        <button id="btn-del" class="ef-btn" onclick="deleteMemo()">削除</button>
+        <span id="char-count"></span>
+      </div>
+    </div>
+    <div id="empty-ed"><p>メモを選択するか</p><button id="empty-add-btn" onclick="addMemo()">+ 新しいメモ</button></div>
+  </div>
+
 </div>
 
 <!-- TIMELINE TAB -->
@@ -591,6 +668,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
 
 </div><!-- #body -->
 </div><!-- #app -->
+
+<!-- フローティングツールバー（Notion型） -->
+<div id="float-toolbar">
+  <button onclick="memoRichExecCmd('bold')" title="太字"><b>B</b></button>
+  <button onclick="memoRichExecCmd('italic')" title="斜体"><i>I</i></button>
+  <button onclick="memoRichExecCmd('underline')" title="下線"><u>U</u></button>
+  <div class="ft-sep"></div>
+  <button onclick="memoRichExecCmd('insertUnorderedList')" title="リスト">• リスト</button>
+  <button onclick="memoRichExecCmd('insertOrderedList')" title="番号リスト">1. リスト</button>
+  <div class="ft-sep"></div>
+  <button onclick="floatInsertLink()" title="リンク">🔗</button>
+</div>
 
 <!-- NOTICE -->
 <div id="notice-bg">
@@ -1125,11 +1214,171 @@ function refreshTLF(){
 let treeOpenFolders=new Set(['__all__']); // folder IDs open in tree
 let treeOpenMemos=new Set();              // memo IDs whose children are shown
 
-function renderAll(){renderTree();renderEditor();renderPinRow();refreshTLF()}
-function renderFolders(){/* legacy no-op — tree replaces this */}
-function setAF(id){activeFolder=id;renderTree()}
+function renderAll(){renderFolderOnlyTree();renderCardList();renderEditor();renderPinRow();refreshTLF()}
+function renderFolders(){/* legacy no-op */}
+function setAF(id){activeFolder=id;renderFolderOnlyTree();renderCardList()}
 function renderMemoList(){/* legacy no-op */}
-function selMemo(id){currentId=id;renderTree();renderEditor()}
+function selMemo(id){currentId=id;renderFolderOnlyTree();renderCardList();renderEditor()}
+
+// =====================
+// フォルダ専用ツリー（左ペイン）
+// =====================
+function renderFolderOnlyTree(){
+  const el=document.getElementById('folder-only-tree');
+  if(!el)return;
+  let html='';
+  // 「すべて」行
+  const allCnt=memos.length;
+  html+=`<div class="tree-folder"><div class="tree-folder-row${activeFolder==='__all__'?' sel':''}" onclick="setAF('__all__')" ondragover="treeFolderDragOver(event)" ondragleave="treeDragLeave(event)" ondrop="treeFolderDrop(event,'__unfiled__')">
+    <span class="tree-folder-icon">📋</span><span class="tree-folder-name">すべて</span>
+    <span class="tree-folder-count">${allCnt}</span></div></div>`;
+  // フォルダツリー再帰
+  function renderFN(fid){
+    const f=fid?folders.find(x=>x.id===fid):null;
+    const fOpen=treeOpenFolders.has(fid||'__unfiled__');
+    const childFolders=folders.filter(x=>(x.parentId||null)===(fid||null));
+    const totalMemos=fid?memos.filter(m=>m.folderId===fid).length:memos.filter(m=>!m.folderId).length;
+    const hasChildren=childFolders.length>0||totalMemos>0;
+    const folderRowId=fid||'__unfiled__';
+    const isSel=activeFolder===folderRowId;
+    if(!fid&&totalMemos===0&&childFolders.length===0&&activeFolder!=='__unfiled__')return'';
+    let h=`<div class="tree-folder"><div class="tree-folder-row${isSel?' sel':''}" data-fid="${folderRowId}" onclick="setAF(this.dataset.fid)" ondragover="treeFolderDragOver(event)" ondragleave="treeDragLeave(event)" ondrop="treeFolderDrop(event,this.dataset.fid)"${fid?' draggable="true" ondragstart="treeFolderDragStart(event,this.dataset.fid)"':''}>`;
+    h+=`<span class="tree-toggle${fOpen&&hasChildren?' open':''}" style="${hasChildren?'':'opacity:0'}" data-fid="${folderRowId}" onclick="event.stopPropagation();treeFolderToggle(this.dataset.fid)">▶</span>`;
+    h+=`<span class="tree-folder-icon">${f?f.icon:'📂'}</span>`;
+    h+=`<span class="tree-folder-name">${f?eH(f.name):'未分類'}</span>`;
+    h+=`<span class="tree-folder-count">${totalMemos}</span>`;
+    if(fid){
+      h+=`<button class="tree-folder-addsub" data-fid="${fid}" onclick="event.stopPropagation();openFMchild(this.dataset.fid)" title="サブフォルダ">📁</button>`;
+      h+=`<button class="tree-folder-menu" data-fid="${fid}" onclick="event.stopPropagation();fCtx(this.dataset.fid,event)">…</button>`;
+    }
+    h+='</div>';
+    if(fOpen&&hasChildren){
+      h+='<div class="tree-children open">';
+      childFolders.forEach(cf=>{h+=renderFN(cf.id);});
+      h+='</div>';
+    }
+    h+='</div>';
+    return h;
+  }
+  // top-level folders
+  folders.filter(f=>!f.parentId).forEach(f=>{html+=renderFN(f.id);});
+  html+=renderFN(null); // unfiled
+  el.innerHTML=html;
+}
+
+// =====================
+// メモカードリスト（中央ペイン）
+// =====================
+let _cardSortMode='updated'; // 'updated' | 'created' | 'alpha'
+function renderCardList(){
+  const el=document.getElementById('memo-card-list');
+  if(!el)return;
+  // ヘッダーのタイトル更新
+  const titleEl=document.getElementById('mlp-title');
+  if(titleEl){
+    if(activeFolder==='__all__')titleEl.textContent='すべてのメモ';
+    else if(activeFolder===UNF.id)titleEl.textContent='未分類';
+    else{const f=folders.find(x=>x.id===activeFolder);titleEl.textContent=f?f.icon+' '+f.name:'メモ';}
+  }
+  let list=filtMemos('');
+  if(_cardSortMode==='updated')list.sort((a,b)=>b.updated-a.updated);
+  else if(_cardSortMode==='created')list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  else list.sort((a,b)=>(a.title||'').localeCompare(b.title||'','ja'));
+  if(!list.length){
+    el.innerHTML='<div class="mc-empty">メモがありません<br><br><button onclick="addMemo()" style="font-size:12px;padding:7px 18px;border-radius:var(--r);border:1px solid var(--acbd);background:var(--acb);color:var(--acd);cursor:pointer;font-family:inherit">+ メモを作成</button></div>';
+    return;
+  }
+  el.innerHTML=list.map(m=>{
+    const cat=catOf(m.cat);
+    const tags=(m.tags||[]).slice(0,3).map(t=>`<span class="mc-tag" style="background:${cat.bg};color:${cat.color}">${eH(t)}</span>`).join('');
+    const folder=m.folderId&&activeFolder==='__all__'?`<span class="mc-folder">${fById(m.folderId).icon}</span>`:'';
+    const isActive=m.id===currentId;
+    const inSelMode=memoSelMode;
+    const isChecked=treeCheckedIds.has(m.id);
+    return`<div class="mc${isActive?' active':''}${inSelMode?' check-mode':''}" data-mid="${m.id}"
+      onclick="cardClick('${m.id}')" oncontextmenu="treeMemoCtx('${m.id}',event)">
+      <input class="mc-check" type="checkbox" ${isChecked?'checked':''} onchange="cardCheck('${m.id}',this.checked)" onclick="event.stopPropagation()">
+      <div class="mc-dot" style="background:${cat.color}"></div>
+      <div class="mc-body">
+        <div class="mc-title">${eH(m.title||'無題')}</div>
+        ${m.body?`<div class="mc-preview">${eH((m.body||'').slice(0,60))}</div>`:''}
+        <div class="mc-meta">${tags}${folder}<span class="mc-date">${fmtD(m.updated)}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function cardClick(id){
+  if(memoSelMode){cardCheck(id,!treeCheckedIds.has(id));return;}
+  currentId=id;
+  renderCardList();renderEditor();
+  // エディタにフォーカス（少し遅延で確実に）
+  setTimeout(()=>{const r=document.getElementById('memo-rich');if(r){r.focus();// カーソルを末尾へ
+    const sel=window.getSelection();if(sel&&r.lastChild){const range=document.createRange();range.selectNodeContents(r);range.collapse(false);sel.removeAllRanges();sel.addRange(range);}
+  }},80);
+}
+function cardCheck(id,checked){
+  if(checked)treeCheckedIds.add(id);else treeCheckedIds.delete(id);
+  const cnt=treeCheckedIds.size;
+  const selBar=document.getElementById('mlp-sel-bar');
+  const selCount=document.getElementById('mlp-sel-count');
+  if(selBar)selBar.className=cnt>0?'visible':'';
+  if(selCount)selCount.textContent=cnt+'件選択';
+  // カードのチェック状態だけ更新（全再描画しない）
+  const card=document.querySelector(`.mc[data-mid="${id}"]`);
+  if(card){const cb=card.querySelector('.mc-check');if(cb)cb.checked=checked;}
+}
+
+// =====================
+// フローティングツールバー（Notion型）
+// =====================
+let _ftHideTimer=null;
+function showFloatToolbar(){
+  const sel=window.getSelection();
+  const ft=document.getElementById('float-toolbar');
+  if(!ft)return;
+  clearTimeout(_ftHideTimer);
+  if(!sel||sel.isCollapsed||!sel.toString().trim()){
+    _ftHideTimer=setTimeout(()=>ft.classList.remove('show'),120);
+    return;
+  }
+  // エディタ内の選択かチェック
+  const rich=document.getElementById('memo-rich');
+  if(!rich||!rich.contains(sel.anchorNode)){ft.classList.remove('show');return;}
+  const range=sel.getRangeAt(0);
+  const rect=range.getBoundingClientRect();
+  if(!rect.width&&!rect.height){ft.classList.remove('show');return;}
+  ft.classList.add('show');
+  // ツールバーを選択範囲の上に配置
+  const ftW=ft.offsetWidth||200;
+  let left=rect.left+rect.width/2-ftW/2;
+  let top=rect.top-48+window.scrollY;
+  left=Math.max(8,Math.min(left,window.innerWidth-ftW-8));
+  if(top<8)top=rect.bottom+8+window.scrollY;
+  ft.style.left=left+'px';
+  ft.style.top=top+'px';
+}
+function hideFloatToolbar(){
+  clearTimeout(_ftHideTimer);
+  const ft=document.getElementById('float-toolbar');
+  if(ft)ft.classList.remove('show');
+}
+function floatInsertLink(){
+  hideFloatToolbar();
+  const url=prompt('URLを入力:');
+  if(url)document.execCommand('createLink',false,url);
+  clearTimeout(memoRichTimer);memoRichTimer=setTimeout(memoRichSave,200);
+}
+// ドキュメント全体の mousedown でフローティングツールバー外クリック時に非表示
+document.addEventListener('mousedown',(e)=>{
+  const ft=document.getElementById('float-toolbar');
+  if(ft&&!ft.contains(e.target)){
+    _ftHideTimer=setTimeout(()=>ft.classList.remove('show'),200);
+  }
+});
+
+// =====================
+// toggleMemoSelMode（中央ペイン対応版）
+// =====================
 
 // ---- Tree render ----
 function renderTree(){
@@ -1574,12 +1823,21 @@ function memoRichSave(){
 }
 
 function _updateTreeMemoPreview(id, title, body){
+  // カードリストの該当カードをピンポイント更新（全再描画しない）
+  const card=document.querySelector(`.mc[data-mid="${id}"]`);
+  if(card){
+    const titleEl=card.querySelector('.mc-title');
+    const previewEl=card.querySelector('.mc-preview');
+    if(titleEl)titleEl.textContent=title||'無題';
+    if(previewEl)previewEl.textContent=(body||'').slice(0,60);
+  }
+  // 旧ツリー対応（memo-treeが表示されている場合）
   const row=document.querySelector('.tree-memo-row[data-mid="'+id+'"]');
   if(!row)return;
-  const titleEl=row.querySelector('.tree-memo-title');
-  const previewEl=row.querySelector('.tree-memo-preview');
-  if(titleEl)titleEl.textContent=title||'無題';
-  if(previewEl)previewEl.textContent=(body||'').slice(0,28);
+  const rowTitle=row.querySelector('.tree-memo-title');
+  const rowPreview=row.querySelector('.tree-memo-preview');
+  if(rowTitle)rowTitle.textContent=title||'無題';
+  if(rowPreview)rowPreview.textContent=(body||'').slice(0,28);
 }
 
 function memoRichKeydown(e){
@@ -1969,17 +2227,14 @@ let treeCheckedIds=new Set();
 function toggleMemoSelMode(){
   memoSelMode=!memoSelMode;
   treeCheckedIds=new Set();
-  const bulkBtn=document.getElementById('bulk-btn');
-  const btnsRow=document.getElementById('memo-list-hd-btns');
-  const selCnt=document.getElementById('sel-count');
-  if(memoSelMode){
-    bulkBtn.textContent='完了';bulkBtn.style.borderColor='var(--bd2)';bulkBtn.style.color='var(--tx2)';
-    btnsRow.style.display='flex';
-  }else{
-    bulkBtn.textContent='選択';bulkBtn.style.borderColor='';bulkBtn.style.color='';
-    btnsRow.style.display='none';selCnt.textContent='';
-  }
-  renderTree();
+  // 中央ペイン選択UI
+  const selBtn=document.getElementById('mlp-sel-btn');
+  const selBar=document.getElementById('mlp-sel-bar');
+  if(selBtn)selBtn.textContent=memoSelMode?'完了':'選択';
+  if(selBar)selBar.className=memoSelMode?'visible':'';
+  const selCount=document.getElementById('mlp-sel-count');
+  if(selCount)selCount.textContent='';
+  renderCardList();
 }
 function getMemoChecked(){return[...treeCheckedIds]}
 function treeToggleCheck(id,e){
@@ -2445,9 +2700,17 @@ function switchTab(tab){
   });
   document.getElementById('search-panel').classList.add('hidden');
   renderTabs();
-  if(tab!=='memo'&&memoSelMode){memoSelMode=false;treeCheckedIds=new Set();const bb=document.getElementById('bulk-btn');if(bb){bb.textContent='選択';bb.style.borderColor='';bb.style.color='';}const bh=document.getElementById('memo-list-hd-btns');if(bh)bh.style.display='none';const sc=document.getElementById('sel-count');if(sc)sc.textContent='';}
+  // 選択モードリセット
+  if(tab!=='memo'&&memoSelMode){
+    memoSelMode=false;treeCheckedIds=new Set();
+    const sb=document.getElementById('mlp-sel-btn');if(sb)sb.textContent='選択';
+    const bar=document.getElementById('mlp-sel-bar');if(bar)bar.className='';
+  }
+  if(tab==='memo'){
+    // メモタブに戻った際は両ペインを更新
+    renderFolderOnlyTree();renderCardList();
+  }
   if(tab==='map'){ensureMap();selNodes.clear();linkFrom=null;lassoing=false;lassoRect=null;lassoStart=null;isPan=false;midPan=false;dragging=null;draggingGroup=null;resizingNode=null;renderMapFolders();renderMapTabs();initCanvas();if(canvas)canvas.style.cursor='default';
-    // マップタブ切替時：全ノードの画像ブロックを事前キャッシュして即座に表示
     aNs().forEach(n=>{(n.blocks||[]).forEach(b=>{if(b.type==='img'&&b.src)getImgObj(b.src);});if(n.img)getImgObj(n.img);});
     if(aNs().length)fitView();else drawMap();}
   if(tab==='timeline'){refreshTLF();renderTL()}
@@ -3668,17 +3931,33 @@ ensureMap();
 
   // --- キーボードショートカット ---
   document.addEventListener('keydown',e=>{
+    // Ctrl/Cmd+Z: Undo（入力欄以外）
     if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){
       const tag=document.activeElement?.tagName;
       const ce=document.activeElement?.contentEditable;
       if(tag==='INPUT'||tag==='TEXTAREA'||ce==='true')return;
       e.preventDefault();undo();return;
     }
+    // Ctrl/Cmd+N: 新規メモ
+    if((e.ctrlKey||e.metaKey)&&e.key==='n'){
+      e.preventDefault();
+      switchTab('memo');addMemo();return;
+    }
+    // Ctrl/Cmd+F: 検索フォーカス
+    if((e.ctrlKey||e.metaKey)&&e.key==='f'){
+      e.preventDefault();
+      const si=document.getElementById('search-input');
+      if(si){si.focus();si.select();}return;
+    }
+    // Escape
     if(e.key==='Escape'){
       // ノード編集モーダルが開いている場合はキャンセル
       if(!document.getElementById('ne-bg').classList.contains('hidden')){
         cancelNE();return;
       }
+      // 検索クリア
+      const si=document.getElementById('search-input');
+      if(si&&si.value){si.value='';onSearch('');return;}
       linkFrom=null;selNodes.clear();lassoing=false;lassoRect=null;lassoStart=null;
       dragging=null;draggingGroup=null;isPan=false;
       if(resizingNode){resizingNode=null;resizeCorner=-1;resizeAnchorW=null;}
@@ -3688,6 +3967,21 @@ ensureMap();
     }
     const activeTag=document.activeElement?.tagName;
     const activeCE=document.activeElement?.contentEditable;
+    // メモカードリストで上下キー移動
+    if((e.key==='ArrowUp'||e.key==='ArrowDown')&&activeTag!=='INPUT'&&activeTag!=='TEXTAREA'&&activeCE!=='true'){
+      const panel=document.getElementById('memo-panel');
+      if(panel&&!panel.classList.contains('hidden')){
+        e.preventDefault();
+        const list=filtMemos('');
+        list.sort((a,b)=>b.updated-a.updated);
+        const idx=list.findIndex(m=>m.id===currentId);
+        let next=idx;
+        if(e.key==='ArrowDown')next=Math.min(list.length-1,idx+1);
+        else next=Math.max(0,idx-1);
+        if(list[next]){cardClick(list[next].id);}
+        return;
+      }
+    }
     if(activeTag==='INPUT'||activeTag==='TEXTAREA'||activeCE==='true')return;
     if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();if(typeof delSel==='function')delSel();return}
     if(e.key==='g'||e.key==='G'){e.preventDefault();if(selNodes.size>1)openGrp(selNodes);return}
