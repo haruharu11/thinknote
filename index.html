@@ -86,7 +86,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
 #sidebar-toggle-btn:hover{background:var(--bg3);color:var(--acd)}
 #sidebar-toggle-btn .st-icon{transition:transform .22s cubic-bezier(.4,0,.2,1);display:inline-block}
 /* メモカードリスト（中央ペイン） */
-#memo-list-pane{width:300px;border-right:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+#memo-list-pane{width:300px;border-right:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .22s cubic-bezier(.4,0,.2,1)}
+#memo-list-pane.collapsed{width:0;border-right:none}
+/* メモリストペイン折りたたみボタン */
+#mlp-toggle-wrap{position:relative;width:0;flex-shrink:0;overflow:visible}
+#mlp-toggle-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:20;width:18px;height:52px;background:var(--bg2);border:1px solid var(--bd);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:background .15s,color .15s;user-select:none;font-size:11px}
+#mlp-toggle-btn:hover{background:var(--bg3);color:var(--acd)}
+#mlp-toggle-btn .mlp-icon{transition:transform .22s cubic-bezier(.4,0,.2,1);display:inline-block}
 #mlp-header{padding:10px 12px 8px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#0e1220}
 #mlp-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--tx3)}
 #mlp-actions{display:flex;gap:4px;align-items:center}
@@ -528,6 +534,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
     <div id="memo-card-list"></div>
     <!-- compat -->
     <div id="memo-tree" style="display:none"></div>
+  </div>
+
+  <!-- メモリストペイン折りたたみボタン -->
+  <div id="mlp-toggle-wrap">
+    <button id="mlp-toggle-btn" onclick="toggleMemoListPane()" title="メモリストを折りたたむ">
+      <span class="mlp-icon">‹</span>
+    </button>
   </div>
 
   <!-- ③ 右ペイン：エディタ -->
@@ -1471,6 +1484,37 @@ function toggleSidebar(){
 })();
 
 // =====================
+// メモリストペイン折りたたみ
+// =====================
+let _memoListCollapsed=false;
+function toggleMemoListPane(){
+  _memoListCollapsed=!_memoListCollapsed;
+  const pane=document.getElementById('memo-list-pane');
+  const btn=document.getElementById('mlp-toggle-btn');
+  const icon=btn?.querySelector('.mlp-icon');
+  if(_memoListCollapsed){
+    pane.classList.add('collapsed');
+    if(icon)icon.style.transform='rotate(180deg)';
+    btn.title='メモリストを開く';
+  }else{
+    pane.classList.remove('collapsed');
+    if(icon)icon.style.transform='rotate(0deg)';
+    btn.title='メモリストを折りたたむ';
+  }
+  try{localStorage.setItem('tn8_memolist_collapsed',_memoListCollapsed?'1':'0');}catch{}
+}
+(function initMemoListPane(){
+  try{if(localStorage.getItem('tn8_memolist_collapsed')==='1'){
+    _memoListCollapsed=true;
+    const pane=document.getElementById('memo-list-pane');
+    if(pane)pane.classList.add('collapsed');
+    const btn=document.getElementById('mlp-toggle-btn');
+    const icon=btn?.querySelector('.mlp-icon');
+    if(icon)icon.style.transform='rotate(180deg)';
+  }}catch{}
+})();
+
+// =====================
 // マップサイドバー折りたたみ
 // =====================
 let _mapSidebarCollapsed=false;
@@ -2211,7 +2255,32 @@ function saveMemo(){
   }
 }
 
-function addMemo(){const id=uid();const fid=activeFolder===ALL_F.id||activeFolder===UNF.id?null:activeFolder;const _now=Date.now();memos.unshift({id,title:'',body:'',tags:[],cat:'memo',folderId:fid,parentId:null,createdAt:_now,updated:_now});if(fid)treeOpenFolders.add(fid);else treeOpenFolders.add('__unfiled__');save();currentId=id;renderAll();setTimeout(()=>document.getElementById('title-input')?.focus(),50)}
+function addMemo(opts){
+  // メモタブに切り替え
+  if(activeTab!=='memo')switchTab('memo');
+  // 左ペインを両方折りたたむ（フォーカスモード）
+  if(!_sidebarCollapsed){
+    _sidebarCollapsed=true;
+    const sb=document.getElementById('left-sidebar');
+    const btn=document.getElementById('sidebar-toggle-btn');
+    const icon=btn?.querySelector('.st-icon');
+    if(sb)sb.classList.add('collapsed');
+    if(icon)icon.style.transform='rotate(180deg)';
+    if(btn)btn.title='フォルダパネルを開く';
+    try{localStorage.setItem('tn8_sidebar_collapsed','1');}catch{}
+  }
+  if(!_memoListCollapsed){
+    _memoListCollapsed=true;
+    const pane=document.getElementById('memo-list-pane');
+    const btn=document.getElementById('mlp-toggle-btn');
+    const icon=btn?.querySelector('.mlp-icon');
+    if(pane)pane.classList.add('collapsed');
+    if(icon)icon.style.transform='rotate(180deg)';
+    if(btn)btn.title='メモリストを開く';
+    try{localStorage.setItem('tn8_memolist_collapsed','1');}catch{}
+  }
+  const id=uid();const fid=activeFolder===ALL_F.id||activeFolder===UNF.id?null:activeFolder;const _now=Date.now();memos.unshift({id,title:'',body:'',tags:[],cat:'memo',folderId:fid,parentId:null,createdAt:_now,updated:_now});if(fid)treeOpenFolders.add(fid);else treeOpenFolders.add('__unfiled__');save();currentId=id;renderAll();setTimeout(()=>document.getElementById('title-input')?.focus(),50);
+}
 function deleteMemo(){
   if(!currentId||!confirm('このメモを削除しますか？\n（子メモがある場合も含めて削除されます）'))return;
   // collect ids to delete: this memo + all descendants
