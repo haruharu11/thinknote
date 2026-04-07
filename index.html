@@ -183,6 +183,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
 /* 固定ツールバー（画像追加などはここ） */
 #memo-rich-toolbar{display:flex;gap:4px;padding:5px 14px;border-top:1px solid var(--bd);flex-shrink:0;flex-wrap:wrap;background:var(--bg2)}
 #memo-rich-toolbar .mb{padding:4px 10px;font-size:12px}
+.mobile-only{display:none}
+@media(pointer:coarse),(max-width:600px){.mobile-only{display:inline-flex}}
 .memo-img-wrap{position:relative;display:inline-block;margin:4px 0}
 .memo-img-resize{display:flex;align-items:center;gap:5px;padding:3px 0;font-size:11px;color:var(--tx3)}
 .memo-img-resize input[type=range]{flex:1;accent-color:var(--ac)}
@@ -564,8 +566,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
            onpaste="memoRichPaste(event)"
            onmouseup="showFloatToolbar()" onkeyup="showFloatToolbar()"></div>
       <input type="file" id="memo-img-file" accept="image/*" style="display:none" onchange="memoImgFileAdd(this)">
+      <input type="file" id="memo-img-camera" accept="image/*" capture="environment" style="display:none" onchange="memoImgFileAdd(this)">
       <div id="memo-rich-toolbar">
         <button class="mb" onclick="document.getElementById('memo-img-file').click()">📎 画像</button>
+        <button class="mb mobile-only" onclick="document.getElementById('memo-img-camera').click()">📷 カメラ</button>
         <button class="mb" onclick="memoRichExecCmd('bold')"><b>B</b></button>
         <button class="mb" onclick="memoRichExecCmd('italic')"><i>I</i></button>
         <button class="mb" onclick="memoRichExecCmd('insertUnorderedList')">• リスト</button>
@@ -864,6 +868,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',san
         <span style="font-size:11px;color:var(--tx3);min-width:60px">文字サイズ</span>
         <input type="range" id="ne-font" min="60" max="160" step="5" style="flex:1;accent-color:var(--ac)" oninput="neFontPreview()">
         <span id="ne-font-val" style="font-size:11px;color:var(--tx3);min-width:36px;text-align:right"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:var(--tx3);min-width:60px">横幅</span>
+        <input type="range" id="ne-width" min="80" max="500" step="10" style="flex:1;accent-color:var(--ac)" oninput="neSizePreview()">
+        <span id="ne-width-val" style="font-size:11px;color:var(--tx3);min-width:36px;text-align:right"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:var(--tx3);min-width:60px">縦幅</span>
+        <input type="range" id="ne-height" min="40" max="400" step="10" style="flex:1;accent-color:var(--ac)" oninput="neSizePreview()">
+        <span id="ne-height-val" style="font-size:11px;color:var(--tx3);min-width:36px;text-align:right"></span>
       </div>
     </div>
     <div class="mbr"><button class="mb" onclick="cancelNE()">キャンセル</button><button class="mb primary" onclick="confirmNE()">保存</button></div>
@@ -2697,6 +2711,8 @@ function openNE(node){
     fontScale:node.fontScale,
     noteBg:node.noteBg,
     noteColor:node.noteColor,
+    w:node.w,
+    h:node.h,
   };
   const isNote=node.type==='note';
   document.getElementById('ne-title').textContent=isNote?'付箋を編集':'ノードを編集';
@@ -2730,6 +2746,12 @@ function openNE(node){
   const pct=Math.round((node.fontScale||1)*100);
   document.getElementById('ne-font').value=pct;
   document.getElementById('ne-font-val').textContent=pct+'%';
+  const curW=node.w||NW;
+  const curH=node.h||NH;
+  document.getElementById('ne-width').value=curW;
+  document.getElementById('ne-width-val').textContent=curW+'px';
+  document.getElementById('ne-height').value=curH;
+  document.getElementById('ne-height-val').textContent=curH+'px';
   document.getElementById('ne-bg').classList.remove('hidden');
   setTimeout(()=>{
     const labelEl=document.getElementById('ne-label');
@@ -2747,6 +2769,8 @@ function cancelNE(){
     neNode.fontScale=_neSnapshot.fontScale;
     if(_neSnapshot.noteBg!==undefined)neNode.noteBg=_neSnapshot.noteBg;
     if(_neSnapshot.noteColor!==undefined)neNode.noteColor=_neSnapshot.noteColor;
+    if(_neSnapshot.w!==undefined)neNode.w=_neSnapshot.w; else delete neNode.w;
+    if(_neSnapshot.h!==undefined)neNode.h=_neSnapshot.h; else delete neNode.h;
   }
   _neSnapshot=null;
   closeNE();
@@ -2759,6 +2783,16 @@ function neFontPreview(){
   document.getElementById('ne-font-val').textContent=pct+'%';
   neNode.fontScale=pct/100;
   neRichCommit();
+}
+
+function neSizePreview(){
+  if(!neNode)return;
+  const w=parseInt(document.getElementById('ne-width').value);
+  const h=parseInt(document.getElementById('ne-height').value);
+  document.getElementById('ne-width-val').textContent=w+'px';
+  document.getElementById('ne-height-val').textContent=h+'px';
+  neNode.w=w;neNode.h=h;
+  drawMap();
 }
 
 function pickNoteColor(i){
@@ -3514,20 +3548,29 @@ function drawMap(){
 // corners: 0=TL,1=TR,2=BL,3=BR  (screen coords → world)
 const RH=7; // handle radius in canvas px
 function drawResizeHandles(x,y,w,h,color){
-  const hs=5/zoom; // half-size of square handle in world px
+  const isTouch=('ontouchstart' in window);
+  const hs=(isTouch?11:5)/zoom; // タッチ時は大きめ
   const col=color||'#7F77DD';
   [[x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(([cx,cy])=>{
     // white fill with colored border — square for clear resize affordance
-    ctx.fillStyle='#ffffff';
-    ctx.fillRect(cx-hs,cy-hs,hs*2,hs*2);
-    ctx.strokeStyle=col;ctx.lineWidth=1.5/zoom;
-    ctx.strokeRect(cx-hs,cy-hs,hs*2,hs*2);
+    ctx.fillStyle='rgba(255,255,255,0.95)';
+    ctx.beginPath();
+    if(isTouch){
+      // タッチ用：角丸の大きめハンドル
+      const r=hs*0.45;
+      ctx.roundRect(cx-hs,cy-hs,hs*2,hs*2,r);
+    }else{
+      ctx.rect(cx-hs,cy-hs,hs*2,hs*2);
+    }
+    ctx.fill();
+    ctx.strokeStyle=col;ctx.lineWidth=(isTouch?2:1.5)/zoom;
+    ctx.stroke();
   });
 }
 function hitResizeCorner(sx,sy,node){
   const wp=s2w(sx,sy);
-  // thresh = 16 canvas px converted to world units → large, easy to click
-  const thresh=12/zoom; // 12 canvas px hit area around each corner
+  const isTouch=('ontouchstart' in window);
+  const thresh=(isTouch?22:12)/zoom; // タッチ時は当たり判定を広く
   const nw=nW(node),nh=nH_base(node);
   const corners=[[node.x,node.y],[node.x+nw,node.y],[node.x,node.y+nh],[node.x+nw,node.y+nh]];
   for(let i=0;i<4;i++){
@@ -3854,6 +3897,7 @@ function bindMap(){
     if(e.touches.length===2){
       // ピンチズーム開始：ドラッグ状態をすべてリセット
       dragging=null;isPan=false;lassoing=false;lassoRect=null;lassoStart=null;
+      resizingNode=null;resizeCorner=-1;resizeAnchorW=null;
       lastPinchDist=Math.hypot(
         e.touches[0].clientX-e.touches[1].clientX,
         e.touches[0].clientY-e.touches[1].clientY
@@ -3861,6 +3905,24 @@ function bindMap(){
     }
     const pos=cpxy(e);const node=hitNode(pos.x,pos.y);
     touchStart={pos,node,time:Date.now()};
+
+    // ---- リサイズハンドル優先判定（タッチ） ----
+    if(selNodes.size>0&&!linkFrom){
+      const selList=aNs().filter(n=>selNodes.has(n.id));
+      for(const _sn of selList){
+        const _rc=hitResizeCorner(pos.x,pos.y,_sn);
+        if(_rc>=0){
+          resizingNode=_sn;resizeCorner=_rc;
+          resizeAnchorW=s2w(pos.x,pos.y);
+          resizingNode._rOrigW=nW(_sn);resizingNode._rOrigH=nH_base(_sn);
+          resizingNode._rOrigX=_sn.x;resizingNode._rOrigY=_sn.y;
+          dragging=null;isPan=false;
+          updateBadge('リサイズ中…','sel-mode');
+          drawMap();return;
+        }
+      }
+    }
+
     if(node){
       if(!selNodes.has(node.id)){selNodes.clear();selNodes.add(node.id);}
       dragging=node;const dw=s2w(pos.x,pos.y);dragOff={x:dw.x-node.x,y:dw.y-node.y};
@@ -3888,6 +3950,19 @@ function bindMap(){
       const dx=pos.x-touchStart.pos.x,dy=pos.y-touchStart.pos.y;
       if(Math.sqrt(dx*dx+dy*dy)>DRAG_THRESH)touchHasDrag=true;
     }
+    // タッチリサイズ
+    if(resizingNode&&resizeAnchorW){
+      touchHasDrag=true;
+      const rw=s2w(pos.x,pos.y);
+      const o=resizingNode;
+      const MIN_W=60,MIN_H=40;
+      const ddx=rw.x-resizeAnchorW.x,ddy=rw.y-resizeAnchorW.y;
+      if(resizeCorner===3){o.w=Math.max(MIN_W,o._rOrigW+ddx);o.h=Math.max(MIN_H,o._rOrigH+ddy);}
+      else if(resizeCorner===1){o.w=Math.max(MIN_W,o._rOrigW+ddx);const nh=Math.max(MIN_H,o._rOrigH-ddy);o.y=o._rOrigY+o._rOrigH-nh;o.h=nh;}
+      else if(resizeCorner===2){const nw=Math.max(MIN_W,o._rOrigW-ddx);o.x=o._rOrigX+o._rOrigW-nw;o.w=nw;o.h=Math.max(MIN_H,o._rOrigH+ddy);}
+      else if(resizeCorner===0){const nw=Math.max(MIN_W,o._rOrigW-ddx);o.x=o._rOrigX+o._rOrigW-nw;o.w=nw;const nh=Math.max(MIN_H,o._rOrigH-ddy);o.y=o._rOrigY+o._rOrigH-nh;o.h=nh;}
+      drawMap();return;
+    }
     if(dragging){
       const w=s2w(pos.x,pos.y);
       if(selNodes.size>1&&selNodes.has(dragging.id)){
@@ -3900,6 +3975,11 @@ function bindMap(){
   };
 
   canvas.ontouchend=e=>{
+    if(resizingNode){
+      save();resizingNode=null;resizeCorner=-1;resizeAnchorW=null;
+      updateBadge(null);drawMap();
+      dragging=null;isPan=false;touchStart=null;touchHasDrag=false;return;
+    }
     if(touchHasDrag&&dragging)save();
     // ダブルタップ検出
     if(!touchHasDrag&&touchStart&&touchStart.node){
